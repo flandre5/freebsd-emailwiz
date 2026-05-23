@@ -10,6 +10,10 @@ POSIX shell script.
 THIS WILL BE PATCHED TO WORK WITH NEWER VERSIONS OF DOVECOT AS SOON AS IT
 IS UPDATED IN THE [FREEBSD PORTS](https://www.freshports.org/mail/dovecot) /!\\
 
+## TODO
+
+- [] Port adddomain.sh to OpenSMTPD-FreeBSD
+
 ## This script installs
 
 - **OpenSMTPD** to send and receive mail.

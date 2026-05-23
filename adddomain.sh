@@ -1,5 +1,9 @@
 #!/bin/sh
 
+
+# THIS DOES NOT WORK FOR freebsd-emailwiz BECAUSE IT USES POSTFIX
+# TODO: PORT THIS TO OPENSMTPD AND FREEBSD
+
 domain="$1"
 
 # Input validation to allow only valid domain characters
