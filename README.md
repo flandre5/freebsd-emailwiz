@@ -130,3 +130,8 @@ Can't send or receive mail? Getting marked as spam? There are tools to double-ch
 - [Is your IP blacklisted?](https://mxtoolbox.com/blacklists.aspx)
 - [mxtoolbox](https://mxtoolbox.com/SuperTool.aspx)
 - [dataswamp OpenBSD mail guide](https://dataswamp.org/~solene/2024-07-24-openbsd-email-server-setup.html)
+
+## Other versions
+
+- The [original script](https://github.com/lukesmithxyz/emailwiz) for
+  Debian-based systems
