@@ -3,31 +3,21 @@
 This script installs an email server with all the features required in the
 modern web.
 
-I've linked this file on Github to a shorter, more memorable address on my
-website so you can get it on your machine with this short command:
+This should have been done with an Ansible playbook rather than with a
+POSIX shell script.
 
-```sh
-curl -LO lukesmith.xyz/emailwiz.sh
-```
-
-When prompted by a dialog menu at the beginning, select "Internet Site", then
-give your full domain without any subdomain, e.g. `lukesmith.xyz`.
-
-I'm glad to say that dozens, hundreds of people have now used it and there is a
-sizeable network of people with email servers thanks to this script.
+/!\\ THIS ONLY SUPPORTS DOVECOT <=2.3, NOT THE 2.4 FILE CONFIGURATION SYNTAX
+THIS WILL BE PATCHED TO WORK WITH NEWER VERSIONS OF DOVECOT AS SOON AS IT
+IS UPDATED IN THE [FREEBSD PORTS](https://www.freshports.org/mail/dovecot) /!\\
 
 ## This script installs
 
-- **Postfix** to send and receive mail.
+- **OpenSMTPD** to send and receive mail.
 - **Dovecot** to get mail to your email client (mutt, Thunderbird, etc.).
 - Config files that link the two above securely with native PAM log-ins.
-- **Spamassassin** to prevent spam and allow you to make custom filters.
+- **rspamd** to prevent spam and allow you to make custom filters.
 - **OpenDKIM** to validate you so you can send to Gmail and other big sites.
-- **Certbot** SSL certificates, if not already present.
-- **fail2ban** to increase server security, with enabled modules for the above
-  programs.
-- (optionally) **a self-signed certificate** instead of OpenDKIM and Certbot. This allows to quickly set up an isolated mail server that collects email notifications from devices in the same local network(s) or serves as secure/private messaging system over VPN.
-
+  
 ## This script does _not_...
 
 - use a SQL database or anything like that. We keep it simple and use normal
@@ -39,13 +29,19 @@ sizeable network of people with email servers thanks to this script.
   is a guide for [Rainloop](https://landchad.net/rainloop/) on
   [LandChad.net](https://landchad.net) for those that want such a web
   interface.
-
+- Generate certificates for your mail server. It's a pain in the ass to
+  maintain + certbot sucks ass + your mail server might not be a web server
+  as well. So bring your own certificates.
+  
 ## Prerequisites for Installation
 
-1. Debian or Ubuntu server.
+1. FreeBSD server.
 2. DNS records that point at least your domain's `mail.` subdomain to your
-   server's IP (IPv4 and IPv6). This is required on initial run for certbot to
+   server's IP (IPv4). This is required on initial run for certbot to
    get an SSL certificate for your `mail.` subdomain.
+3. Your TLS certificates. You'll be prompted by the script where your certs
+   are located. You must have `fullchain.pem` and `privkey.pem`. Just like
+   certbot generates the certificates.
 
 ## Mandatory Finishing Touches
 
@@ -55,6 +51,8 @@ While the script enables your mail ports on your server, it is common practice
 for all VPS providers to block mail ports on their end by default. Open a help
 ticket with your VPS provider asking them to open your mail ports and they will
 do it in short order.
+
+You might also have to configure `pf.conf`
 
 ### DNS records
 
@@ -92,60 +90,22 @@ should set this for both IPv4 and IPv6.
 Let's say we want to add a user Billy and let him receive mail, run this:
 
 ```
-useradd -m -G mail billy
-passwd billy
+useradd
+Username: test
 ```
-
-Any user added to the `mail` group will be able to receive mail. Suppose a user
-Cassie already exists and we want to let her receive mail too. Just run:
-
-```
-usermod -a -G mail cassie
-```
-
 A user's mail will appear in `~/Mail/`. If you want to see your mail while ssh'd
 in the server, you could just install mutt, add `set spoolfile="+Inbox"` to
 your `~/.muttrc` and use mutt to view and reply to mail. You'll probably want
 to log in remotely though:
-
-## Installing with self-signed certificate, in "isolated" mode
-
-This mode skips the setup of OpenDKIM and Certbot, and will instead create a self-signed cert that lasts 100 years. It also allows to customize the logic country name, state/province name and organization name to generate the certificate automatically. An example usecase is for an isolated server that collects notifications from devices in the same local network(s) or serves as secure/private messaging system over VPN (wireguard or whatever).
-This server with self-signed certificate as configured will NOT be able to send anything to public mail servers (Gmail, Outlook and so on), at least not directly.
-
-open the script and change the following line 
-```
-selfsigned="no" # yes no
-```
-to become 
-```
-selfsigned="yes" # yes no
-```
-it's also possible to customize and automate the self-signed certificate creation
-by changing the following lines in the script 
-```
-use_cert_config="no"
-```
-to
-```
-use_cert_config="yes"
-```
-
-and then write country name, state/province name and organization name in the following lines
-```
-country_name="" # IT US UK IN etc etc
-state_or_province_name=""
-organization_name=""
-```
 
 ## Logging in from email clients (Thunderbird/mutt/etc)
 
 Let's say you want to access your mail with Thunderbird or mutt or another
 email program. For my domain, the server information will be as follows:
 
-- SMTP server: `mail.lukesmith.xyz`
+- SMTP server: `mail.example.org`
 - SMTP port: 465
-- IMAP server: `mail.lukesmith.xyz`
+- IMAP server: `mail.example.org`
 - IMAP port: 993
 
 ## Benefited from this?
@@ -153,15 +113,16 @@ email program. For my domain, the server information will be as follows:
 I am always glad to hear this script is still making life easy for people. If
 this script or documentation has saved you some frustration, donate here:
 
-- btc: `bc1qzw6mk80t3vrp2cugmgfjqgtgzhldrqac5axfh4`
-- xmr: `8A5v4Ci11Lz7BDoE2z2oPqMoNHzr5Zj8B3Q2N2qzqrUKhAKgNQYGSSaZDnBUWg6iXCiZyvC9mVCyGj5kGMJTi1zGKGM4Trm`
+- btc: `bc1q2wt4wyr0j9ffq3668n2vsw3jf6pvqqmq930ts8`
+- xmr: `833dPL1CT7GFa4TXPTn33ESS3qetzV8ZcMYQGBT8h2DZAJ5kaYGJ8RLNvyNgSueDCeEXNqZG3iKwiS3tVQTz9EWMS1er5Gh`
 
 ## Sites for Troubleshooting
 
 Can't send or receive mail? Getting marked as spam? There are tools to double-check your DNS records and more:
 
-- Always check `journalctl -xe` first for specific errors.
+- Always check `/var/log/maillog` first for specific errors.
 - [Check your DNS](https://intodns.com/)
 - [Test your TXT records via mail](https://appmaildev.com/en/dkim)
 - [Is your IP blacklisted?](https://mxtoolbox.com/blacklists.aspx)
 - [mxtoolbox](https://mxtoolbox.com/SuperTool.aspx)
+- [dataswamp OpenBSD mail guide](https://dataswamp.org/~solene/2024-07-24-openbsd-email-server-setup.html)
