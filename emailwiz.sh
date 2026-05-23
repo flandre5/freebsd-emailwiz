@@ -229,7 +229,7 @@ sed -ibak '/^#Canonicalization/s/simple/relaxed\/simple/' /usr/local/etc/opendki
 sed -ibak '/^#Canonicalization/s/^#//' /usr/local/etc/opendkim.conf
 
 sed -ibak '/Socket/s/^#*/#/' /usr/local/etc/opendkim.conf
-grep -q '^Socket\s*inet:12301@localhost' /usr/local/etc/opendkim.conf || echo 'Socket inet:12301@localhost' >> /etc/opendkim.conf
+grep -q '^Socket\s*inet:12301@localhost' /usr/local/etc/opendkim.conf || echo 'Socket inet:12301@localhost' >> /usr/local/etc/opendkim.conf
 
 # Configure rspamd in OpenDKIM
 
@@ -244,7 +244,7 @@ domain {
         path = \"/usr/local/etc/mail/dkim/$domain\";
         selector = \"dkim\";
     }
-}"
+}" > /usr/local/etc/rspamd/local.d/dkim_signing.conf
 
 
 for x in milter-opendkim dovecot smtpd rspamd; do
